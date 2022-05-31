@@ -22,7 +22,7 @@ from pyasn1_modules.rfc5208 import PrivateKeyInfo
 if BUILD_GCLOUD_REST:
     from requests import Session
 else:
-    from aiohttp import ClientSession as Session  # type: ignore[no-redef]
+    from aiohttp import ClientSession as Session  # type: ignore[misc]
 
 if TYPE_CHECKING:
     from .bucket import Bucket  # pylint: disable=cyclic-import
@@ -180,7 +180,8 @@ class Blob:
             key_bytes = private_key_info.asOctets()
 
         key = rsa.key.PrivateKey.load_pkcs1(key_bytes, format='DER')
-        signed_blob = rsa.pkcs1.sign(str_to_sign.encode(), key, 'SHA-256')
+        signed_blob = rsa.pkcs1.sign(
+            str_to_sign.encode(), key, 'SHA-256')  # type: ignore[arg-type]
 
         signature = binascii.hexlify(signed_blob).decode()
 

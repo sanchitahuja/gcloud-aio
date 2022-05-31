@@ -1,6 +1,10 @@
+ci:
+    autofix_commit_msg: 'refactor(lint): apply automatic lint fixes'
+    autoupdate_commit_msg: 'chore(deps): bump pre-commit linter versions'
+
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.2.0
     hooks:
     -   id: check-case-conflict
     -   id: check-executables-have-shebangs
@@ -29,7 +33,7 @@ repos:
     -   id: name-tests-test
     -   id: requirements-txt-fixer
 -   repo: https://github.com/pycqa/pylint
-    rev: v2.8.2
+    rev: v2.13.9
     hooks:
     -   id: pylint
         additional_dependencies:
@@ -42,6 +46,7 @@ repos:
         - --max-args=10
         - --score=n
         - -d broad-except
+        - -d deprecated-decorator
         - -d duplicate-code
         - -d fixme
         - -d import-error
@@ -54,17 +59,17 @@ repos:
         - -d ungrouped-imports  # conflicts with reorder-python-imports
         - -d wrong-import-order  # conflicts with reorder-python-imports
 -   repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.1.10
+    rev: v1.2.0
     hooks:
     -   id: remove-crlf
     -   id: remove-tabs
 -   repo: https://github.com/asottile/reorder_python_imports
-    rev: v2.6.0
+    rev: v3.1.0
     hooks:
     -   id: reorder-python-imports
         args: [--py26-plus]
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.910
+    rev: v0.960
     hooks:
     -   &mypy
         id: mypy
@@ -72,46 +77,56 @@ repos:
         entry: env MYPYPATH=./stubs mypy
         require_serial: True
         additional_dependencies:
+        - aiohttp
         - types-cryptography
         - types-jwt
         - types-pkg_resources
         - types-requests
         args:
-        - --ignore-missing-imports
-        - --follow-imports=silent
         - --show-error-codes
         - --strict
         - --strict-equality
         - --warn-unreachable
         files: auth/
-        exclude: (tests/.*)|(noxfile.py)
+        exclude: tests/
     -   <<: *mypy
         name: mypy-bigquery
         additional_dependencies:
+        - aiohttp
+        - gcloud-aio-auth
         - types-pkg_resources
         - types-requests
         files: bigquery/
     -   <<: *mypy
         name: mypy-datastore
         additional_dependencies:
+        - aiohttp
+        - gcloud-aio-auth
         - types-pkg_resources
         - types-requests
         files: datastore/
     -   <<: *mypy
         name: mypy-kms
         additional_dependencies:
+        - aiohttp
+        - gcloud-aio-auth
         - types-pkg_resources
         - types-requests
         files: kms/
     -   <<: *mypy
         name: mypy-pubsub
         additional_dependencies:
+        - aiohttp
+        - gcloud-aio-auth
         - types-pkg_resources
         - types-requests
         files: pubsub/
     -   <<: *mypy
         name: mypy-storage
         additional_dependencies:
+        - aiohttp
+        - gcloud-aio-auth
+        - rsa
         - types-aiofiles
         - types-pkg_resources
         - types-requests
@@ -119,19 +134,30 @@ repos:
     -   <<: *mypy
         name: mypy-taskqueue
         additional_dependencies:
+        - aiohttp
+        - gcloud-aio-auth
         - types-pkg_resources
         - types-requests
         files: taskqueue/
 -   repo: https://github.com/asottile/yesqa
-    rev: v1.2.3
+    rev: v1.3.0
     hooks:
     -   id: yesqa
+-   repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: v1.6.0
+    hooks:
+    -   id: autopep8
 -   repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:
     -   id: flake8
+        additional_dependencies:
+        - flake8-2020==1.6.1
+        - flake8-broken-line==0.4.0
+        - flake8-builtins==1.5.3
+        - flake8-comprehensions==3.10.0
         args:
-        - --ignore=E501,W503,F401,F811
+        - --ignore=A003,E501,W503,F401,F811
 -   repo: local
     hooks:
     -   &poetry-check

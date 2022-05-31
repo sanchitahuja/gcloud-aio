@@ -1,9 +1,10 @@
-import io
 import json
 import logging
 import os
 from typing import Any
+from typing import AnyStr
 from typing import Dict
+from typing import IO
 from typing import List
 from typing import Optional
 from typing import Union
@@ -26,7 +27,7 @@ from gcloud.aio.datastore.value import Value
 if BUILD_GCLOUD_REST:
     from requests import Session
 else:
-    from aiohttp import ClientSession as Session  # type: ignore[no-redef]
+    from aiohttp import ClientSession as Session  # type: ignore[misc]
 
 
 try:
@@ -55,7 +56,7 @@ class Datastore:
     _project: Optional[str]
 
     def __init__(self, project: Optional[str] = None,
-                 service_file: Optional[Union[str, io.IOBase]] = None,
+                 service_file: Optional[Union[str, IO[AnyStr]]] = None,
                  namespace: str = '', session: Optional[Session] = None,
                  token: Optional[Token] = None) -> None:
         self.namespace = namespace
@@ -67,9 +68,9 @@ class Datastore:
             self.token = None
         else:
             self._project = project
-            self.token = token or Token(service_file=service_file,
-                                        session=self.session.session,
-                                        scopes=SCOPES)
+            self.token = token or Token(
+                service_file=service_file, scopes=SCOPES,
+                session=self.session.session)  # type: ignore[arg-type]
 
     async def project(self) -> str:
         if self._project:
@@ -150,8 +151,9 @@ class Datastore:
         })
 
         s = AioSession(session) if session else self.session
-        resp = await s.post(url, data=payload, headers=headers,
-                            timeout=timeout)
+        # TODO: the type issue will be fixed in auth-4.0.2
+        resp = await s.post(url, data=payload,  # type: ignore[arg-type]
+                            headers=headers, timeout=timeout)
         data = await resp.json()
 
         return [self.key_kind.from_repr(k) for k in data['keys']]
@@ -195,8 +197,9 @@ class Datastore:
         })
 
         s = AioSession(session) if session else self.session
-        resp = await s.post(url, data=payload, headers=headers,
-                            timeout=timeout)
+        # TODO: the type issue will be fixed in auth-4.0.2
+        resp = await s.post(url, data=payload,  # type: ignore[arg-type]
+                            headers=headers, timeout=timeout)
         data: Dict[str, Any] = await resp.json()
 
         return {
@@ -231,8 +234,9 @@ class Datastore:
         })
 
         s = AioSession(session) if session else self.session
-        resp = await s.post(url, data=payload, headers=headers,
-                            timeout=timeout)
+        # TODO: the type issue will be fixed in auth-4.0.2
+        resp = await s.post(url, data=payload,  # type: ignore[arg-type]
+                            headers=headers, timeout=timeout)
         data: Dict[str, Any] = await resp.json()
 
         return self.datastore_operation_kind.from_repr(data)
@@ -279,8 +283,9 @@ class Datastore:
         })
 
         s = AioSession(session) if session else self.session
-        resp = await s.post(url, data=payload, headers=headers,
-                            timeout=timeout)
+        # TODO: the type issue will be fixed in auth-4.0.2
+        resp = await s.post(url, data=payload,  # type: ignore[arg-type]
+                            headers=headers, timeout=timeout)
 
         data: Dict[str, List[Any]] = await resp.json()
 
@@ -312,7 +317,9 @@ class Datastore:
         })
 
         s = AioSession(session) if session else self.session
-        await s.post(url, data=payload, headers=headers, timeout=timeout)
+        # TODO: the type issue will be fixed in auth-4.0.2
+        await s.post(url, data=payload,  # type: ignore[arg-type]
+                     headers=headers, timeout=timeout)
 
     # https://cloud.google.com/datastore/docs/reference/data/rest/v1/projects/rollback
     async def rollback(self, transaction: str,
@@ -332,7 +339,9 @@ class Datastore:
         })
 
         s = AioSession(session) if session else self.session
-        await s.post(url, data=payload, headers=headers, timeout=timeout)
+        # TODO: the type issue will be fixed in auth-4.0.2
+        await s.post(url, data=payload,  # type: ignore[arg-type]
+                     headers=headers, timeout=timeout)
 
     # https://cloud.google.com/datastore/docs/reference/data/rest/v1/projects/runQuery
     async def runQuery(self, query: BaseQuery,
@@ -363,8 +372,9 @@ class Datastore:
         })
 
         s = AioSession(session) if session else self.session
-        resp = await s.post(url, data=payload, headers=headers,
-                            timeout=timeout)
+        # TODO: the type issue will be fixed in auth-4.0.2
+        resp = await s.post(url, data=payload,  # type: ignore[arg-type]
+                            headers=headers, timeout=timeout)
 
         data: Dict[str, Any] = await resp.json()
         return self.query_result_batch_kind.from_repr(data['batch'])

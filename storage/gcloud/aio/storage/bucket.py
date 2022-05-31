@@ -15,8 +15,9 @@ if BUILD_GCLOUD_REST:
     from requests import HTTPError as ResponseError
     from requests import Session
 else:
-    from aiohttp import ClientResponseError as ResponseError  # type: ignore[no-redef]  # pylint: disable=line-too-long
-    from aiohttp import ClientSession as Session  # type: ignore[no-redef]
+    from aiohttp import (  # type: ignore[misc]
+        ClientResponseError as ResponseError)
+    from aiohttp import ClientSession as Session  # type: ignore[misc]
 
 if TYPE_CHECKING:
     from .storage import Storage  # pylint: disable=cyclic-import
@@ -61,7 +62,7 @@ class Bucket:
             content = await self.storage.list_objects(self.name,
                                                       params=params,
                                                       session=session)
-            items.extend([x['name'] for x in content.get('items', list())])
+            items.extend([x['name'] for x in content.get('items', [])])
 
             params['pageToken'] = content.get('nextPageToken', '')
             if not params['pageToken']:
