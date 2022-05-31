@@ -185,7 +185,9 @@ workflows:
 
       # run linters
       - linter/pre-commit:
-          python_version: 3.8.6  # TODO: https://github.com/PyCQA/pylint/issues/3882
+          # N.B. keep this pinned to the oldest 3.x to make sure we maintain
+          # support. Note that 3.6.x is not supported by `pre-commit` anymore.
+          python_version: 3.7.13
           filters:
             tags:
               only: /.*/

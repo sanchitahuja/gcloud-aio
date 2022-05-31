@@ -118,7 +118,7 @@ class Token:
         self.access_token_duration = 0
         self.access_token_acquired_at = datetime.datetime(1970, 1, 1)
 
-        self.acquiring: Optional[asyncio.Future[Any]] = None
+        self.acquiring: Optional['asyncio.Future[Any]'] = None
 
     async def get_project(self) -> Optional[str]:
         project = (os.environ.get('GOOGLE_CLOUD_PROJECT')
